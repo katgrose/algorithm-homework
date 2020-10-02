@@ -1,0 +1,95 @@
+/*
+ * Title: hw5_2.cpp
+ * Abstract:  This program takes in a list of vertices, edges,
+              and their corresponding costs and finds the path
+              with the lowest cost. This program tests all 
+              permutations of the vertex set and tests its validity.
+ * Author: Kathryn Grose 
+ * ID: 7777 
+ * Date: 10/1/2020
+ */
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <climits>
+
+using namespace std;
+
+int cost(vector<int> v_set, int total_v, int start_vtex, vector< vector<int>> costs) 
+{ 
+  int total = 0;
+  
+  if(v_set[0] != start_vtex) {
+      return 0;
+    }
+	for (int i = 1; i <= total_v; i++) 
+	{ 
+    if(costs[v_set[i-1]][v_set[i]] == 0) {
+      if(i == total_v) {
+        total += costs[v_set[i - 1]][start_vtex];
+      }
+      else{
+        return 0;
+      }
+    }
+    total += costs[v_set[i-1]][v_set[i]];
+	} 
+  return total;
+} 
+
+void TSP(vector<int> v_set, int total_v, int start_vtex, vector< vector<int>> costs) {
+  sort(v_set.begin(), v_set.end()); 
+
+  int TSP_cost = INT_MAX;
+  vector<int> TSP_path;
+
+	do 
+	{ 
+    int minCost;
+		minCost = cost(v_set, total_v, start_vtex, costs); 
+    if (minCost > 0 && minCost < TSP_cost) {
+      TSP_cost = minCost;
+      TSP_path = v_set;
+    }
+	} while (next_permutation(v_set.begin(), v_set.end())); 
+
+  if(TSP_cost == INT_MAX){
+    cout << "Path:" << endl
+          << "Cost:-1" << endl;
+  }
+  else {
+    cout << "Path:";
+    for(int i = 0; i < TSP_path.size(); i++) {
+      cout << TSP_path[i] << "->";
+    }
+    cout << start_vtex << endl;
+    cout << "Cost:" << TSP_cost << endl;
+  }
+}
+
+int main() {
+  int total_v, total_e, start_vtex;
+  cin >> total_v >> total_e;
+
+  vector<int> v_set;
+  vector< vector<int> > costs(total_v, vector<int> (total_v, 0));
+
+  for(int i = 0; i < total_e; i++) {
+    int vertex, edge, cost;
+    cin >> vertex >> edge >> cost;
+
+    costs[vertex][edge] = cost;
+
+    if(!count(v_set.begin(), v_set.end(), vertex)){
+      v_set.insert(v_set.end(), vertex);
+    }
+  }
+
+  cin >> start_vtex;
+  cout << endl;
+
+  TSP(v_set, total_v, start_vtex, costs);
+
+  return 0;
+}
